@@ -14,9 +14,12 @@ public class Chunk : MonoBehaviour
     private int zWorld = 4;
 
     public Material CubeMaterial;
+    public Block[,,] ChunkData;
 
     private IEnumerator BuildChunk(int sizeX, int sizeY, int sizeZ)
     {
+        ChunkData = new Block[sizeX, sizeY, sizeZ];
+
         for(var z = 0; z < sizeZ; z++)
         {
             for(var y = 0; y < sizeY; y++)
@@ -24,14 +27,32 @@ public class Chunk : MonoBehaviour
                 for(var x = 0; x < sizeX; x++)
                 {
                     var pos = new Vector3(x, y, z);
-                    var block = new Block(Block.BlockType.DIRT, pos, this.gameObject, CubeMaterial);
-                    block.Draw();
-                    yield return null;
+                    if(Random.Range(0, 100) < 50)
+                    {
+                        ChunkData[x, y, z] = new Block(Block.BlockType.DIRT, pos, this.gameObject, CubeMaterial);
+                    }
+                    else
+                    {
+                        ChunkData[x, y, z] = new Block(Block.BlockType.AIR, pos, this.gameObject, CubeMaterial);
+                    }
+
+                }
+            }
+        }
+
+        for(var z = 0; z < sizeZ; z++)
+        {
+            for(var y = 0; y < sizeY; y++)
+            {
+                for(var x = 0; x < sizeX; x++)
+                {
+                    ChunkData[x, y, z].Draw();
                 }
             }
         }
 
         CombineQuads();
+        yield return null;
     }
 
     private void Start()

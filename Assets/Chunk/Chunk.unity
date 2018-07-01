@@ -140,9 +140,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a821955ead434fe7a8e83732b9dc963, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xWorld: 4
-  yWorld: 4
-  zWorld: 4
+  xWorld: 32
+  yWorld: 32
+  zWorld: 32
   CubeMaterial: {fileID: 2100000, guid: 33b3835c4cb7c4542af49549ec0a76ac, type: 2}
 --- !u!4 &446875245
 Transform:

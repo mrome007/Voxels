@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,7 +19,8 @@ public class Block
     {
         GRASS,
         DIRT,
-        STONE
+        STONE,
+        AIR
     }
 
 
@@ -35,6 +37,8 @@ public class Block
             new Vector2( 0, 0.9375f ),new Vector2( 0.0625f, 0.9375f )}
     }; 
 
+    public bool IsSolid;
+
     private Material cubeMaterial;
     private BlockType bType;
     private GameObject parent;
@@ -46,6 +50,7 @@ public class Block
         cubeMaterial = mat;
         position = pos;
         parent = par;
+        IsSolid = bType != BlockType.AIR;
     }
 
     private void CreateQuad(CubeSide side)
@@ -156,11 +161,48 @@ public class Block
 
     public void Draw()
     {
-        CreateQuad(CubeSide.FRONT);
-        CreateQuad(CubeSide.BACK);
-        CreateQuad(CubeSide.LEFT);
-        CreateQuad(CubeSide.RIGHT);
-        CreateQuad(CubeSide.TOP);
-        CreateQuad(CubeSide.BOTTOM);
+        if(bType == BlockType.AIR)
+        {
+            return;
+        }
+        
+        if(!HasSolidNeighbor((int)position.x, (int)position.y, (int)position.z + 1))
+        {
+            CreateQuad(CubeSide.FRONT);
+        }
+        if(!HasSolidNeighbor((int)position.x, (int)position.y, (int)position.z - 1))
+        {
+            CreateQuad(CubeSide.BACK);
+        }
+        if(!HasSolidNeighbor((int)position.x - 1, (int)position.y, (int)position.z))
+        {
+            CreateQuad(CubeSide.LEFT);
+        }
+        if(!HasSolidNeighbor((int)position.x + 1, (int)position.y, (int)position.z))
+        {
+            CreateQuad(CubeSide.RIGHT);
+        }
+        if(!HasSolidNeighbor((int)position.x, (int)position.y + 1, (int)position.z))
+        {
+            CreateQuad(CubeSide.TOP);
+        }
+        if(!HasSolidNeighbor((int)position.x, (int)position.y - 1, (int)position.z))
+        {
+            CreateQuad(CubeSide.BOTTOM);
+        }
+    }
+
+    public bool HasSolidNeighbor(int x, int y, int z)
+    {
+        var chunks = parent.GetComponent<Chunk>().ChunkData;
+        try
+        {
+            return chunks[x, y, z].IsSolid;
+        }
+        catch(Exception ex)
+        {
+        }
+
+        return false;
     }
 }

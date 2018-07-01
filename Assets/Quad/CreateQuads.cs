@@ -56,7 +56,7 @@ public class CreateQuads : MonoBehaviour
                 break;
 
             case CubeSide.LEFT:
-                vertices = new Vector3[] { p3, p7, p4, p0 };
+                vertices = new Vector3[] { p7, p4, p0, p3 };
                 normals = new Vector3[] { Vector3.left, Vector3.left, Vector3.left, Vector3.left };
                 break;
 

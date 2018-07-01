@@ -6,7 +6,17 @@ public class CreateQuads : MonoBehaviour
 {
     public Material CubeMaterial;
 
-    private void CreateQuad()
+    public enum CubeSide
+    {
+        BOTTOM,
+        TOP,
+        LEFT,
+        RIGHT,
+        FRONT,
+        BACK
+    }
+
+    private void CreateQuad(CubeSide side)
     {
         var mesh = new Mesh();
         mesh.name = "ScriptedMesh";
@@ -32,8 +42,43 @@ public class CreateQuads : MonoBehaviour
         var p6 = new Vector3(0.5f, 0.5f, -0.5f);
         var p7 = new Vector3(-0.5f, 0.5f, -0.5f);
 
-        vertices = new Vector3[] { p4, p5, p1, p0 };
-        normals = new Vector3[] { Vector3.forward, Vector3.forward, Vector3.forward, Vector3.forward };
+        //SET UP VERTICES IN CLOCKWISE DIRECTION TO FACE FORWARD.
+        switch(side)
+        {
+            case CubeSide.BOTTOM:
+                vertices = new Vector3[] { p0, p1, p2, p3 };
+                normals = new Vector3[] { Vector3.down, Vector3.down, Vector3.down, Vector3.down };
+                break;
+            
+            case CubeSide.TOP:
+                vertices = new Vector3[] { p7, p6, p5, p4 };
+                normals = new Vector3[] { Vector3.up, Vector3.up, Vector3.up, Vector3.up };
+                break;
+
+            case CubeSide.LEFT:
+                vertices = new Vector3[] { p3, p7, p4, p0 };
+                normals = new Vector3[] { Vector3.left, Vector3.left, Vector3.left, Vector3.left };
+                break;
+
+            case CubeSide.RIGHT:
+                vertices = new Vector3[] { p5, p6, p2, p1 };
+                normals = new Vector3[] { Vector3.right, Vector3.right, Vector3.right, Vector3.right };
+                break;
+
+            case CubeSide.BACK:
+                vertices = new Vector3[] { p6, p7, p3, p2 };
+                normals = new Vector3[] { Vector3.back, Vector3.back, Vector3.back, Vector3.back };
+                break;
+
+            case CubeSide.FRONT:
+                vertices = new Vector3[] { p4, p5, p1, p0 };
+                normals = new Vector3[] { Vector3.forward, Vector3.forward, Vector3.forward, Vector3.forward };
+                break;
+
+            default:
+                break;
+        }
+
         uvs = new Vector2[] { uv11, uv01, uv00, uv10 };
         triangles = new int[] { 3, 1, 0, 3, 2, 1 };
 
@@ -52,8 +97,45 @@ public class CreateQuads : MonoBehaviour
         renderer.material = CubeMaterial;
     }
 
+    private void CombineQuads()
+    {
+        var meshFilters = GetComponentsInChildren<MeshFilter>();
+        var combine = new CombineInstance[meshFilters.Length];
+
+        var i = 0;
+        while(i < meshFilters.Length)
+        {
+            combine[i].mesh = meshFilters[i].sharedMesh;
+            combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
+            i++;
+        }
+
+        var mf = (MeshFilter)this.gameObject.AddComponent(typeof(MeshFilter));
+        mf.mesh = new Mesh();
+        mf.mesh.CombineMeshes(combine);
+
+        var renderer = this.gameObject.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
+        renderer.material = CubeMaterial;
+
+        foreach(Transform quad in transform)
+        {
+            Destroy(quad.gameObject);
+        }
+    }
+
+    private void CreateCube()
+    {
+        CreateQuad(CubeSide.FRONT);
+        CreateQuad(CubeSide.BACK);
+        CreateQuad(CubeSide.LEFT);
+        CreateQuad(CubeSide.RIGHT);
+        CreateQuad(CubeSide.TOP);
+        CreateQuad(CubeSide.BOTTOM);
+        CombineQuads();
+    }
+
     private void Start()
     {
-        CreateQuad();
+        CreateCube();
     }
 }

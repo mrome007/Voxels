@@ -156,9 +156,6 @@ public class CreateQuads : MonoBehaviour
         mf.mesh = new Mesh();
         mf.mesh.CombineMeshes(combine);
 
-        //var renderer = this.gameObject.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
-        //renderer.material = CubeMaterial;
-
         foreach(Transform quad in transform)
         {
             Destroy(quad.gameObject);

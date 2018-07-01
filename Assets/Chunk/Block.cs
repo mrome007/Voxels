@@ -39,15 +39,15 @@ public class Block
 
     public bool IsSolid;
 
-    private Material cubeMaterial;
     private BlockType bType;
     private GameObject parent;
     private Vector3 position;
+    private Chunk owner;
 
-    public Block(BlockType b, Vector3 pos, GameObject par, Material mat)
+    public Block(BlockType blk, Vector3 pos, GameObject par, Chunk own)
     {
-        bType = b;
-        cubeMaterial = mat;
+        bType = blk;
+        owner = own;
         position = pos;
         parent = par;
         IsSolid = bType != BlockType.AIR;
@@ -154,9 +154,6 @@ public class Block
 
         var meshFilter = (MeshFilter)quad.AddComponent(typeof(MeshFilter));
         meshFilter.mesh = mesh;
-
-        var renderer = quad.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
-        renderer.material = cubeMaterial;
     }
 
     public void Draw()
@@ -194,7 +191,8 @@ public class Block
 
     public bool HasSolidNeighbor(int x, int y, int z)
     {
-        var chunks = parent.GetComponent<Chunk>().ChunkData;
+        Block[,,] chunks;
+        chunks = owner.ChunkData;
         try
         {
             return chunks[x, y, z].IsSolid;

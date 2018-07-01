@@ -53,6 +53,7 @@
   <ItemGroup>
      <Compile Include="Assets\Chunk\Block.cs" />
      <Compile Include="Assets\Chunk\Chunk.cs" />
+     <Compile Include="Assets\Chunk\World.cs" />
      <Compile Include="Assets\CubeAnatomy\CubeProperties.cs" />
      <Compile Include="Assets\Quad\CreateQuads.cs" />
      <Compile Include="Assets\TestCube\CameraController.cs" />

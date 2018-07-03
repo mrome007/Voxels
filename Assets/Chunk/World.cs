@@ -5,8 +5,9 @@ using UnityEngine;
 public class World : MonoBehaviour
 {
     public Material TextureAtlas;
-    public static int ColumnHeight = 16;
-    public static int ChunkSize = 16;
+    public static int ColumnHeight = 2;
+    public static int ChunkSize = 8;
+    public static int WorldSize = 2;
     public static Dictionary<string, Chunk> Chunks;
 
     public static string BuildChunkName(Vector3 position)
@@ -21,9 +22,29 @@ public class World : MonoBehaviour
             var chunkPosition = new Vector3(this.transform.position.x, index * ChunkSize, this.transform.position.z);
             var chunk = new Chunk(chunkPosition, TextureAtlas);
             chunk.ChunkObject.transform.parent = this.transform;
-            if(!Chunks.ContainsKey(chunk.ChunkObject.name))
+            Chunks.Add(chunk.ChunkObject.name, chunk);
+        }
+
+        foreach(var chunk in Chunks)
+        {
+            chunk.Value.DrawChunk();
+            yield return null;
+        }
+    }
+
+    private IEnumerator BuildWorld()
+    {
+        for(int z = 0; z < WorldSize; z++)
+        {
+            for(int y = 0; y < WorldSize; y++)
             {
-                Chunks.Add(chunk.ChunkObject.name, chunk);
+                for(int x = 0; x < WorldSize; x++)
+                {
+                    var chunkPosition = new Vector3(x * ChunkSize, y * ChunkSize, z * ChunkSize);
+                    var chunk = new Chunk(chunkPosition, TextureAtlas);
+                    chunk.ChunkObject.transform.parent = this.transform;
+                    Chunks.Add(chunk.ChunkObject.name, chunk);
+                }
             }
         }
 
@@ -39,6 +60,6 @@ public class World : MonoBehaviour
         Chunks = new Dictionary<string, Chunk>();
         this.transform.position = Vector3.zero;
         this.transform.rotation = Quaternion.identity;
-        StartCoroutine(BuildChunkColumn());
+        StartCoroutine(BuildWorld());
     }
 }

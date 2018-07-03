@@ -189,10 +189,51 @@ public class Block
         }
     }
 
+    private int ConvertBlockIndexToLocal(int i)
+    {
+        if(i == -1)
+        {
+            i = World.ChunkSize - 1;
+        }
+        else if(i == World.ChunkSize)
+        {
+            i = 0;
+        }
+
+        return i;
+    }
+
     public bool HasSolidNeighbor(int x, int y, int z)
     {
         Block[,,] chunks;
-        chunks = owner.ChunkData;
+
+        //Check if neighbor is in another chunk
+        if(x < 0 || x >= World.ChunkSize || y < 0 || y >= World.ChunkSize || z < 0 || z >= World.ChunkSize)
+        {
+            var neightborChunkPos = this.parent.transform.position +
+                                    new Vector3((x - (int)position.x) * World.ChunkSize, (y - (int)position.y) * World.ChunkSize, (z - (int)position.z) * World.ChunkSize);
+
+            var nName = World.BuildChunkName(neightborChunkPos);
+
+            x = ConvertBlockIndexToLocal(x);
+            y = ConvertBlockIndexToLocal(y);
+            z = ConvertBlockIndexToLocal(z);
+
+            Chunk nChunk;
+            if(World.Chunks.TryGetValue(nName, out nChunk))
+            {
+                chunks = nChunk.ChunkData;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            chunks = owner.ChunkData;
+        }
+
         try
         {
             return chunks[x, y, z].IsSolid;

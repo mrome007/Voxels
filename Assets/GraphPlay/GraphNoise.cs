@@ -3,31 +3,42 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class GraphNoise : MonoBehaviour {
+public class GraphNoise : MonoBehaviour 
+{
 
-	float t = 0;
-    float inc = 0.01f;
+    private float t = 0;
+    private float inc = 0.01f;
 
-    float t2 = 0;
-    float inc2 = 0.001f;
+    private float t2 = 0;
+    private float inc2 = 0.001f;
 
-    float Map(float min, float max, float omin, float omax, float value)
+    private float Map(float min, float max, float omin, float omax, float value)
     {
         return Mathf.Lerp(min, max, Mathf.InverseLerp(omin, omax, value));
     }
     
-	void Update () 
+	private void Update() 
 	{
         t += inc;
-        float n = Mathf.PerlinNoise(t,1);
-        //Grapher.Log(n, "Perlin1", Color.yellow);
-
-        t2 += inc2;
-        float n2 = Mathf.PerlinNoise(t2, 1);
-        //Grapher.Log(n2, "Perlin2", Color.green);
-
-        float n3 = (n + n2) / 2f;
-        n3 = Map(0, 150, 0, 1, n3);
-        Grapher.Log(n3, "Total", Color.red);
+        var n = FractalBrownianMethod(t, 3, 0.8f);
+        Grapher.Log(n, "Perlin1", Color.yellow);
 	}
+
+    private float FractalBrownianMethod(float t, int octaves, float persistence)
+    {
+        var total = 0f;
+        var frequency = 1f;
+        var amplitude = 1f;
+        var maxValue = 0f;
+
+        for(var i = 0; i < octaves; i++)
+        {
+            total += Mathf.PerlinNoise(t * frequency, 1f) * amplitude;
+            maxValue += amplitude;
+            amplitude *= persistence;
+            frequency *= 2f;
+        }
+
+        return total / maxValue;
+    }
 }

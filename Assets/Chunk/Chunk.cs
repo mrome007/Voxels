@@ -22,7 +22,15 @@ public class Chunk
                     var worldX = (int)(x + ChunkObject.transform.position.x);
                     var worldY = (int)(y + ChunkObject.transform.position.y);
                     var worldZ = (int)(z + ChunkObject.transform.position.z);
-                    if(worldY <= Utils.GenerateHeight(worldX, worldZ))
+                    if(worldY <= Utils.GenerateStoneHeight(worldX, worldZ))
+                    {
+                        ChunkData[x, y, z] = new Block(Block.BlockType.STONE, pos, ChunkObject.gameObject, this);
+                    }
+                    else if(worldY == Utils.GenerateHeight(worldX, worldZ))
+                    {
+                        ChunkData[x, y, z] = new Block(Block.BlockType.GRASS, pos, ChunkObject.gameObject, this);
+                    }
+                    else if(worldY < Utils.GenerateHeight(worldX, worldZ))
                     {
                         ChunkData[x, y, z] = new Block(Block.BlockType.DIRT, pos, ChunkObject.gameObject, this);
                     }

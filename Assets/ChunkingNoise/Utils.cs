@@ -15,6 +15,12 @@ public class Utils
         return (int)height;
     }
 
+    public static int GenerateStoneHeight(float x, float z)
+    {
+        var height = Map(0, maxHeight - 5, 0, 1, FractalBrownianMethod(x * smooth * 2f, z * smooth * 2f, octaves + 1, persistence));
+        return (int)height;
+    }
+
     private static float Map(float newMin, float newMax, float omin, float omax, float value)
     {
         return Mathf.Lerp(newMin, newMax, Mathf.InverseLerp(omin, omax, value));

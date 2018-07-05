@@ -5,8 +5,8 @@ using UnityEngine;
 public class World : MonoBehaviour
 {
     public Material TextureAtlas;
-    public static int ColumnHeight = 2;
-    public static int ChunkSize = 8;
+    public static int ColumnHeight = 16;
+    public static int ChunkSize = 16;
     public static int WorldSize = 2;
     public static Dictionary<string, Chunk> Chunks;
 
@@ -36,7 +36,7 @@ public class World : MonoBehaviour
     {
         for(int z = 0; z < WorldSize; z++)
         {
-            for(int y = 0; y < WorldSize; y++)
+            for(int y = 0; y < ColumnHeight; y++)
             {
                 for(int x = 0; x < WorldSize; x++)
                 {

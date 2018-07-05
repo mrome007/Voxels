@@ -19,7 +19,10 @@ public class Chunk
                 for(var x = 0; x < World.ChunkSize; x++)
                 {
                     var pos = new Vector3(x, y, z);
-                    if(Random.Range(0, 100) < 50)
+                    var worldX = (int)(x + ChunkObject.transform.position.x);
+                    var worldY = (int)(y + ChunkObject.transform.position.y);
+                    var worldZ = (int)(z + ChunkObject.transform.position.z);
+                    if(worldY <= Utils.GenerateHeight(worldX, worldZ))
                     {
                         ChunkData[x, y, z] = new Block(Block.BlockType.DIRT, pos, ChunkObject.gameObject, this);
                     }

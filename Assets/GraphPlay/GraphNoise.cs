@@ -9,9 +9,6 @@ public class GraphNoise : MonoBehaviour
     private float t = 0;
     private float inc = 0.01f;
 
-    private float t2 = 0;
-    private float inc2 = 0.001f;
-
     private float Map(float min, float max, float omin, float omax, float value)
     {
         return Mathf.Lerp(min, max, Mathf.InverseLerp(omin, omax, value));

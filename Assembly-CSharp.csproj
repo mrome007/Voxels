@@ -55,10 +55,24 @@
      <Compile Include="Assets\Chunk\Chunk.cs" />
      <Compile Include="Assets\Chunk\World.cs" />
      <Compile Include="Assets\CubeAnatomy\CubeProperties.cs" />
+     <Compile Include="Assets\GraphPlay\Grapher\Channel.cs" />
+     <Compile Include="Assets\GraphPlay\Grapher\Example\DataProvider.cs" />
+     <Compile Include="Assets\GraphPlay\Grapher\FileHandler.cs" />
+     <Compile Include="Assets\GraphPlay\Grapher\GenTerrain.cs" />
+     <Compile Include="Assets\GraphPlay\Grapher\Grapher.cs" />
+     <Compile Include="Assets\GraphPlay\Grapher\Grapher.Draw.cs" />
+     <Compile Include="Assets\GraphPlay\Grapher\Grapher.Replay.cs" />
+     <Compile Include="Assets\GraphPlay\Grapher\GraphSettings.cs" />
+     <Compile Include="Assets\GraphPlay\Grapher\OpenInFileBrowser.cs" />
+     <Compile Include="Assets\GraphPlay\Grapher\Sample.cs" />
+     <Compile Include="Assets\GraphPlay\Grapher\SettingsWindow.cs" />
+     <Compile Include="Assets\GraphPlay\Grapher\TimeKeeper.cs" />
+     <Compile Include="Assets\GraphPlay\GraphNoise.cs" />
      <Compile Include="Assets\Quad\CreateQuads.cs" />
      <Compile Include="Assets\TestCube\CameraController.cs" />
      <Compile Include="Assets\TestCube\DisplayFPS.cs" />
      <Compile Include="Assets\TestCube\WorldController.cs" />
+     <None Include="Assets\GraphPlay\Grapher\IMPORTANT_README!.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

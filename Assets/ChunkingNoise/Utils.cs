@@ -33,9 +33,11 @@ public class Utils
         var amplitude = 1f;
         var maxValue = 0f;
 
+        var offset = 32000f;
+
         for(var i = 0; i < octaves; i++)
         {
-            total += Mathf.PerlinNoise(x * frequency, z * frequency) * amplitude;
+            total += Mathf.PerlinNoise((x + offset) * frequency, (z + offset) * frequency) * amplitude;
             maxValue += amplitude;
             amplitude *= persistence;
             frequency *= 2f;

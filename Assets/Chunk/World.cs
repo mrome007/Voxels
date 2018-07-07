@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class World : MonoBehaviour
 {
+    public GameObject Player;
     public Material TextureAtlas;
     public static int ColumnHeight = 16;
     public static int ChunkSize = 16;
     public static int WorldSize = 2;
+    public static int Radius = 1;
     public static Dictionary<string, Chunk> Chunks;
 
     public static string BuildChunkName(Vector3 position)
@@ -34,13 +36,16 @@ public class World : MonoBehaviour
 
     private IEnumerator BuildWorld()
     {
-        for(int z = 0; z < WorldSize; z++)
+        var posX = (int)Mathf.Floor(Player.transform.position.x / ChunkSize);
+        var posZ = (int)Mathf.Floor(Player.transform.position.z / ChunkSize);
+
+        for(int z = -Radius; z <= Radius; z++)
         {
-            for(int y = 0; y < ColumnHeight; y++)
+            for(int x = -Radius; x <= Radius; x++)
             {
-                for(int x = 0; x < WorldSize; x++)
+                for(int y = 0; y < ColumnHeight; y++)
                 {
-                    var chunkPosition = new Vector3(x * ChunkSize, y * ChunkSize, z * ChunkSize);
+                    var chunkPosition = new Vector3((x + posX) * ChunkSize, y * ChunkSize, (z + posZ) * ChunkSize);
                     var chunk = new Chunk(chunkPosition, TextureAtlas);
                     chunk.ChunkObject.transform.parent = this.transform;
                     Chunks.Add(chunk.ChunkObject.name, chunk);
@@ -53,10 +58,13 @@ public class World : MonoBehaviour
             chunk.Value.DrawChunk();
             yield return null;
         }
+
+        Player.SetActive(true);
     }
 
     private void Start()
     {
+        Player.SetActive(false);
         Chunks = new Dictionary<string, Chunk>();
         this.transform.position = Vector3.zero;
         this.transform.rotation = Quaternion.identity;

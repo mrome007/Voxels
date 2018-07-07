@@ -79,6 +79,8 @@ public class Chunk
             }
         }
         CombineQuads();
+        var collider = ChunkObject.gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
+        collider.sharedMesh = ChunkObject.transform.GetComponent<MeshFilter>().mesh;
     }
 
     public Chunk(Vector3 position, Material mat)

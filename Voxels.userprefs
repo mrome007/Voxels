@@ -1,11 +1,11 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Chunk/World.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Chunk/Chunk.cs">
     <Files>
-      <File FileName="Assets/ChunkingNoise/Utils.cs" Line="32" Column="68" />
-      <File FileName="Assets/GraphPlay/GraphNoise.cs" Line="24" Column="5" NotebookId="1" />
-      <File FileName="Assets/Chunk/World.cs" Line="9" Column="37" NotebookId="1" />
-      <File FileName="Assets/GraphPlay/Grapher/Example/DataProvider.cs" Line="67" Column="1" NotebookId="1" />
+      <File FileName="Assets/ChunkingNoise/Utils.cs" Line="20" Column="42" />
+      <File FileName="Assets/GraphPlay/GraphNoise.cs" Line="24" Column="5" />
+      <File FileName="Assets/Chunk/World.cs" Line="7" Column="25" />
+      <File FileName="Assets/Chunk/Chunk.cs" Line="31" Column="77" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

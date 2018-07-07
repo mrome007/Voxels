@@ -22,9 +22,29 @@ public class Chunk
                     var worldX = (int)(x + ChunkObject.transform.position.x);
                     var worldY = (int)(y + ChunkObject.transform.position.y);
                     var worldZ = (int)(z + ChunkObject.transform.position.z);
-                    if(worldY <= Utils.GenerateStoneHeight(worldX, worldZ))
+
+                    if(Utils.FractalBrownianMethod3D(worldX, worldY, worldZ, 0.1f, 3) < 0.42f)
                     {
-                        ChunkData[x, y, z] = new Block(Block.BlockType.STONE, pos, ChunkObject.gameObject, this);
+                        ChunkData[x, y, z] = new Block(Block.BlockType.AIR, pos, ChunkObject.gameObject, this);
+                    }
+                    else if(worldY == 0)
+                    {
+                        ChunkData[x, y, z] = new Block(Block.BlockType.BEDROCK, pos, ChunkObject.gameObject, this);
+                    }
+                    else if(worldY <= Utils.GenerateStoneHeight(worldX, worldZ))
+                    {
+                        if(Utils.FractalBrownianMethod3D(worldX, worldY, worldZ, 0.01f, 2) < 0.4f && worldY < 40f)
+                        {
+                            ChunkData[x, y, z] = new Block(Block.BlockType.DIAMOND, pos, ChunkObject.gameObject, this);
+                        }
+                        else if(Utils.FractalBrownianMethod3D(worldX, worldY, worldZ, 0.03f, 3) < 0.41f && worldY < 20f)
+                        {
+                            ChunkData[x, y, z] = new Block(Block.BlockType.REDSTONE, pos, ChunkObject.gameObject, this);
+                        }
+                        else
+                        {
+                            ChunkData[x, y, z] = new Block(Block.BlockType.STONE, pos, ChunkObject.gameObject, this);
+                        }
                     }
                     else if(worldY == Utils.GenerateHeight(worldX, worldZ))
                     {

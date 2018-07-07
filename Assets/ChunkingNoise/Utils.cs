@@ -43,4 +43,17 @@ public class Utils
 
         return total / maxValue;
     }
+
+    public static float FractalBrownianMethod3D(float x, float y, float z, float sm, int oct)
+    {
+        var xy = FractalBrownianMethod(x * sm, y * sm, oct, 0.5f);
+        var yz = FractalBrownianMethod(y * sm, z * sm, oct, 0.5f);
+        var xz = FractalBrownianMethod(x * sm, z * sm, oct, 0.5f);
+
+        var yx = FractalBrownianMethod(y * sm, x * sm, oct, 0.5f);
+        var zy = FractalBrownianMethod(z * sm, y * sm, oct, 0.5f);
+        var zx = FractalBrownianMethod(z * sm, x * sm, oct, 0.5f);
+
+        return (xy + yz + xz + yx + zy + zx) / 6f;
+    }
 }

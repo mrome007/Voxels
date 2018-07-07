@@ -20,7 +20,11 @@ public class Block
         GRASS,
         DIRT,
         STONE,
+        DIAMOND,
+        REDSTONE,
+        BEDROCK,
         AIR
+
     }
 
 
@@ -34,7 +38,13 @@ public class Block
         /*DIRT*/            {new Vector2( 0.125f, 0.9375f ), new Vector2( 0.1875f, 0.9375f),
             new Vector2( 0.125f, 1.0f ),new Vector2( 0.1875f, 1.0f )},
         /*STONE*/           {new Vector2( 0, 0.875f ), new Vector2( 0.0625f, 0.875f),
-            new Vector2( 0, 0.9375f ),new Vector2( 0.0625f, 0.9375f )}
+            new Vector2( 0, 0.9375f ),new Vector2( 0.0625f, 0.9375f )},
+        /*DIAMOND*/         {new Vector2(0.125f, 0.75f), new Vector2(0.1875f, 0.75f),
+            new Vector2(0.125f, 0.8125f), new Vector2(0.1875f, 0.8125f)},
+        /*REDSTONE*/         {new Vector2(0.1875f, 0.75f), new Vector2(0.25f, 0.75f),
+            new Vector2(0.1875f, 0.8125f), new Vector2(0.25f, 0.8125f)},
+        /*BEDROCK*/         {new Vector2(0.0625f, 0.5f), new Vector2(0.125f, 0.5f),
+            new Vector2(0.0625f, 0.5625f), new Vector2(0.125f, 0.5625f)}
     }; 
 
     public bool IsSolid;

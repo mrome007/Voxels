@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class World : MonoBehaviour
 {
@@ -11,6 +12,10 @@ public class World : MonoBehaviour
     public static int WorldSize = 2;
     public static int Radius = 1;
     public static Dictionary<string, Chunk> Chunks;
+
+    public Slider loadingAmount;
+    public Button playButton;
+    public Camera uiCamera;
 
     public static string BuildChunkName(Vector3 position)
     {
@@ -39,6 +44,9 @@ public class World : MonoBehaviour
         var posX = (int)Mathf.Floor(Player.transform.position.x / ChunkSize);
         var posZ = (int)Mathf.Floor(Player.transform.position.z / ChunkSize);
 
+        var totalChunks = (Mathf.Pow(Radius * 2 + 1, 2) * ColumnHeight) * 2;
+        var processCount = 0;
+
         for(int z = -Radius; z <= Radius; z++)
         {
             for(int x = -Radius; x <= Radius; x++)
@@ -49,6 +57,10 @@ public class World : MonoBehaviour
                     var chunk = new Chunk(chunkPosition, TextureAtlas);
                     chunk.ChunkObject.transform.parent = this.transform;
                     Chunks.Add(chunk.ChunkObject.name, chunk);
+
+                    processCount++;
+                    loadingAmount.value = processCount / totalChunks * 100;
+                    yield return null;
                 }
             }
         }
@@ -56,10 +68,28 @@ public class World : MonoBehaviour
         foreach(var chunk in Chunks)
         {
             chunk.Value.DrawChunk();
+            processCount++;
+            loadingAmount.value = processCount / totalChunks * 100;
             yield return null;
         }
 
         Player.SetActive(true);
+
+        ShowWorldUI(false);
+    }
+
+    public void StartBuild()
+    {
+        playButton.interactable = false;
+        StartCoroutine(BuildWorld());
+    }
+
+    public void ShowWorldUI(bool show)
+    {
+        playButton.interactable = show;
+        loadingAmount.gameObject.SetActive(show);
+        playButton.gameObject.SetActive(show);
+        uiCamera.gameObject.SetActive(show);
     }
 
     private void Start()
@@ -68,6 +98,7 @@ public class World : MonoBehaviour
         Chunks = new Dictionary<string, Chunk>();
         this.transform.position = Vector3.zero;
         this.transform.rotation = Quaternion.identity;
-        StartCoroutine(BuildWorld());
+
+        ShowWorldUI(true);
     }
 }

@@ -2,151 +2,98 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Realtime.Messaging.Internal;
 
-public class World : MonoBehaviour
-{
+
+public class World : MonoBehaviour {
+
     public GameObject Player;
     public Material TextureAtlas;
     public static int ColumnHeight = 16;
     public static int ChunkSize = 16;
-    public static int WorldSize = 2;
-    public static int Radius = 1;
-    public static Dictionary<string, Chunk> Chunks;
+    public static int WorldSize = 1;
+    public static int Radius = 4;
+    public static ConcurrentDictionary<string, Chunk> Chunks;
+    public static bool Firstbuild = true;
 
-    public Slider loadingAmount;
-    public Button playButton;
-    public Camera uiCamera;
-
-    private bool firstBuild = true;
-    private bool building = false;
-
-    public static string BuildChunkName(Vector3 position)
+    public static string BuildChunkName(Vector3 v)
     {
-        return (int)position.x + "_" + (int)position.y + "_" + (int)position.z;
+        return (int)v.x + "_" + 
+            (int)v.y + "_" + 
+            (int)v.z;
     }
 
-    private IEnumerator BuildChunkColumn()
+    void BuildChunkAt(int x, int y, int z)
     {
-        for(var index = 0; index < ColumnHeight; index++)
+        var chunkPosition = new Vector3(x*ChunkSize, 
+            y*ChunkSize, 
+            z*ChunkSize);
+
+        var n = BuildChunkName(chunkPosition);
+        Chunk c;
+
+        if(!Chunks.TryGetValue(n, out c))
         {
-            var chunkPosition = new Vector3(this.transform.position.x, index * ChunkSize, this.transform.position.z);
-            var chunk = new Chunk(chunkPosition, TextureAtlas);
-            chunk.ChunkObject.transform.parent = this.transform;
-            Chunks.Add(chunk.ChunkObject.name, chunk);
+            c = new Chunk(chunkPosition, TextureAtlas);
+            c.ChunkObject.transform.parent = this.transform;
+            Chunks.TryAdd(c.ChunkObject.name, c);
         }
 
-        foreach(var chunk in Chunks)
+    }
+
+    private IEnumerator BuildRecursiveWorld(int x, int y, int z, int rad)
+    {
+        yield return null;
+    }
+
+    private IEnumerator DrawChunks()
+    {
+        foreach(var c in Chunks)
         {
-            chunk.Value.DrawChunk();
+            if(c.Value.Status == Chunk.ChunkStatus.DRAW) 
+            {
+                c.Value.DrawChunk();
+            }
+
             yield return null;
         }
     }
 
-    private IEnumerator BuildWorld()
+    // Use this for initialization
+    private void Start() 
     {
-        building = true;
+        var ppos = Player.transform.position;
+        Player.transform.position = new Vector3(ppos.x,
+            Utils.GenerateHeight(ppos.x,ppos.z) + 1,
+            ppos.z);
 
-        var posX = (int)Mathf.Floor(Player.transform.position.x / ChunkSize);
-        var posZ = (int)Mathf.Floor(Player.transform.position.z / ChunkSize);
-
-        var totalChunks = (Mathf.Pow(Radius * 2 + 1, 2) * ColumnHeight) * 2;
-        var processCount = 0;
-
-        for(int z = -Radius; z <= Radius; z++)
-        {
-            for(int x = -Radius; x <= Radius; x++)
-            {
-                for(int y = 0; y < ColumnHeight; y++)
-                {
-                    var chunkPosition = new Vector3((x + posX) * ChunkSize, y * ChunkSize, (z + posZ) * ChunkSize);
-
-                    Chunk chunk;
-                    var name = BuildChunkName(chunkPosition);
-                    if(Chunks.TryGetValue(name, out chunk))
-                    {
-                        chunk.Status = Chunk.ChunkStatus.KEEP;
-                        break;
-                    }
-                    else
-                    {
-                        chunk = new Chunk(chunkPosition, TextureAtlas);
-                        chunk.ChunkObject.transform.parent = this.transform;
-                        Chunks.Add(chunk.ChunkObject.name, chunk);
-                    }
-
-                    if(firstBuild)
-                    {
-                        processCount++;
-                        loadingAmount.value = processCount / totalChunks * 100;
-                    }
-
-                    yield return null;
-                }
-            }
-        }
-
-        foreach(var chunk in Chunks)
-        {
-            if(chunk.Value.Status == Chunk.ChunkStatus.DRAW)
-            {
-                chunk.Value.DrawChunk();
-                chunk.Value.Status = Chunk.ChunkStatus.KEEP;
-            }
-
-            chunk.Value.Status = Chunk.ChunkStatus.DONE;
-
-            if(firstBuild)
-            {
-                processCount++;
-                loadingAmount.value = processCount / totalChunks * 100;
-            }
-            yield return null;
-        }
-
-        Player.SetActive(true);
-
-        if(firstBuild)
-        {
-            ShowWorldUI(false);
-            firstBuild = false;
-        }
-
-        building = false;
-    }
-
-    public void StartBuild()
-    {
-        if(building)
-        {
-            return;
-        }
-        playButton.interactable = false;
-        StartCoroutine(BuildWorld());
-    }
-
-    public void ShowWorldUI(bool show)
-    {
-        playButton.interactable = show;
-        loadingAmount.gameObject.SetActive(show);
-        playButton.gameObject.SetActive(show);
-        uiCamera.gameObject.SetActive(show);
-    }
-
-    private void Start()
-    {
         Player.SetActive(false);
-        Chunks = new Dictionary<string, Chunk>();
-        this.transform.position = Vector3.zero;
-        this.transform.rotation = Quaternion.identity;
 
-        ShowWorldUI(true);
+        Firstbuild = true;
+        Chunks = new ConcurrentDictionary<string, Chunk>();
+        this.transform.position = Vector3.zero;
+        this.transform.rotation = Quaternion.identity;  
+
+        //build starting chunk
+        BuildChunkAt((int)(Player.transform.position.x/ChunkSize),
+            (int)(Player.transform.position.y/ChunkSize),
+            (int)(Player.transform.position.z/ChunkSize));
+        //draw it
+        StartCoroutine(DrawChunks());
+
+        //create a bigger world
+        StartCoroutine(BuildRecursiveWorld((int)(Player.transform.position.x/ChunkSize),
+            (int)(Player.transform.position.y/ChunkSize),
+            (int)(Player.transform.position.z/ChunkSize),Radius));
     }
 
-    private void Update()
+    // Update is called once per frame
+    private void Update () 
     {
-        if(!building && !firstBuild)
+        if(!Player.activeSelf)
         {
-            StartCoroutine(BuildWorld());
+            Player.SetActive(true); 
+            Firstbuild = false;
         }
     }
 }

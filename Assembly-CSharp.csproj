@@ -55,6 +55,8 @@
      <Compile Include="Assets\Chunk\Chunk.cs" />
      <Compile Include="Assets\Chunk\World.cs" />
      <Compile Include="Assets\ChunkingNoise\Utils.cs" />
+     <Compile Include="Assets\ConcurrentDictionary.cs" />
+     <Compile Include="Assets\CoroutineQueue.cs" />
      <Compile Include="Assets\CubeAnatomy\CubeProperties.cs" />
      <Compile Include="Assets\GraphPlay\Grapher\Channel.cs" />
      <Compile Include="Assets\GraphPlay\Grapher\Example\DataProvider.cs" />

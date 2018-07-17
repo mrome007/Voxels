@@ -5,16 +5,21 @@ using UnityEngine.UI;
 using Realtime.Messaging.Internal;
 
 
-public class World : MonoBehaviour {
+public class World : MonoBehaviour 
+{
 
     public GameObject Player;
     public Material TextureAtlas;
     public static int ColumnHeight = 16;
     public static int ChunkSize = 16;
     public static int WorldSize = 1;
-    public static int Radius = 4;
+    public static int Radius = 6;
     public static ConcurrentDictionary<string, Chunk> Chunks;
     public static bool Firstbuild = true;
+
+    private Vector3 lastBuildPos;
+    private CoroutineQueue queue;
+    public static uint maxCoroutines = 1000;
 
     public static string BuildChunkName(Vector3 v)
     {
@@ -43,6 +48,30 @@ public class World : MonoBehaviour {
 
     private IEnumerator BuildRecursiveWorld(int x, int y, int z, int rad)
     {
+        rad--;
+
+        if(rad <= 0)
+        {
+            yield break;
+        }
+
+        BuildChunkAt(x, y, z - 1);
+        queue.Run(BuildRecursiveWorld(x, y, z - 1, rad));
+
+        BuildChunkAt(x, y - 1, z);
+        queue.Run(BuildRecursiveWorld(x, y - 1, z, rad));
+
+        BuildChunkAt(x - 1, y, z);
+        queue.Run(BuildRecursiveWorld(x - 1, y, z, rad));
+
+        BuildChunkAt(x, y, z + 1);
+        queue.Run(BuildRecursiveWorld(x, y, z + 1, rad));
+
+        BuildChunkAt(x, y + 1, z);
+        queue.Run(BuildRecursiveWorld(x, y + 1, z, rad));
+
+        BuildChunkAt(x + 1, y, z);
+        queue.Run(BuildRecursiveWorld(x + 1, y, z, rad));
         yield return null;
     }
 
@@ -59,6 +88,14 @@ public class World : MonoBehaviour {
         }
     }
 
+    private void BuildNearPlayer()
+    {
+        StopCoroutine("BuildRecursiveWorld");
+        queue.Run(BuildRecursiveWorld((int)(Player.transform.position.x/ChunkSize),
+            (int)(Player.transform.position.y/ChunkSize),
+            (int)(Player.transform.position.z/ChunkSize),Radius));
+    }
+
     // Use this for initialization
     private void Start() 
     {
@@ -67,33 +104,44 @@ public class World : MonoBehaviour {
             Utils.GenerateHeight(ppos.x,ppos.z) + 1,
             ppos.z);
 
+        lastBuildPos = Player.transform.position;
         Player.SetActive(false);
 
         Firstbuild = true;
         Chunks = new ConcurrentDictionary<string, Chunk>();
         this.transform.position = Vector3.zero;
-        this.transform.rotation = Quaternion.identity;  
+        this.transform.rotation = Quaternion.identity;
+        queue = new CoroutineQueue(maxCoroutines, StartCoroutine);
 
         //build starting chunk
         BuildChunkAt((int)(Player.transform.position.x/ChunkSize),
             (int)(Player.transform.position.y/ChunkSize),
             (int)(Player.transform.position.z/ChunkSize));
         //draw it
-        StartCoroutine(DrawChunks());
+        queue.Run(DrawChunks());
 
         //create a bigger world
-        StartCoroutine(BuildRecursiveWorld((int)(Player.transform.position.x/ChunkSize),
+        queue.Run(BuildRecursiveWorld((int)(Player.transform.position.x/ChunkSize),
             (int)(Player.transform.position.y/ChunkSize),
             (int)(Player.transform.position.z/ChunkSize),Radius));
     }
 
     // Update is called once per frame
-    private void Update () 
+    private void Update() 
     {
+        var movement = lastBuildPos - Player.transform.position;
+        if(movement.magnitude > ChunkSize)
+        {
+            lastBuildPos = Player.transform.position;
+            BuildNearPlayer();
+        }
+
         if(!Player.activeSelf)
         {
             Player.SetActive(true); 
             Firstbuild = false;
         }
+
+        queue.Run(DrawChunks());
     }
 }

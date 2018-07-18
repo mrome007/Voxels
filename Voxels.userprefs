@@ -1,13 +1,13 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Chunk/World.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Chunk/Chunk.cs">
     <Files>
-      <File FileName="Assets/Chunk/World.cs" Line="37" Column="47" />
-      <File FileName="Assets/Chunk/Chunk.cs" Line="89" Column="14" />
-      <File FileName="Assets/Chunk/Block.cs" Line="169" Column="5" />
-      <File FileName="Assets/ConcurrentDictionary.cs" Line="67" Column="56" />
-      <File FileName="Assets/Standard Assets/Utility/SimpleActivatorMenu.cs" Line="10" Column="1" />
-      <File FileName="Assets/Quad/CreateQuads.cs" Line="5" Column="19" />
+      <File FileName="Assets/Chunk/World.cs" Line="86" Column="32" />
+      <File FileName="Assets/Chunk/Chunk.cs" Line="26" Column="50" />
+      <File FileName="Assets/Chunk/Block.cs" Line="1" Column="1" />
+      <File FileName="Assets/ConcurrentDictionary.cs" Line="1" Column="1" />
+      <File FileName="Assets/Standard Assets/Utility/SimpleActivatorMenu.cs" Line="1" Column="1" />
+      <File FileName="Assets/Quad/CreateQuads.cs" Line="1" Column="1" />
       <File FileName="Assets/CoroutineQueue.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>

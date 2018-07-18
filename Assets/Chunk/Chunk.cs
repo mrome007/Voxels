@@ -1,6 +1,34 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+
+[Serializable]
+class BlockData
+{
+    public Block.BlockType[, ,] matrix;
+
+    public BlockData()
+    {
+    }
+
+    public BlockData(Block[,,] b)
+    {
+        matrix = new Block.BlockType[World.ChunkSize, World.ChunkSize, World.ChunkSize];
+        for(int z = 0; z < World.ChunkSize; z++)
+        {
+            for(int y = 0; y < World.ChunkSize; y++)
+            {
+                for(int x = 0; x < World.ChunkSize; x++)
+                {
+                    matrix[x, y, z] = b[x, y, z].bType;
+                }
+            }
+        }
+    }
+}
 
 public class Chunk
 {
@@ -16,9 +44,50 @@ public class Chunk
     }
 
     public ChunkStatus Status;
+    private BlockData bd;
+
+    private string BuildChunkFileName(Vector3 v)
+    {
+        return Application.persistentDataPath + "/savedata/Chunk_" + (int)v.x + "_" + (int)v.y + "_" + (int)v.z + "_" + World.ChunkSize + "_" + World.Radius + ".dat";
+    }
+
+    private bool Load()
+    {
+        var chunkFile = BuildChunkFileName(ChunkObject.transform.position);
+        if(File.Exists(chunkFile))
+        {
+            var bf = new BinaryFormatter();
+            var file = File.Open(chunkFile, FileMode.Open);
+            bd = new BlockData();
+            bd = (BlockData)bf.Deserialize(file);
+            file.Close();
+            return true;
+        }
+        return false;
+    }
+
+    public void Save()
+    {
+        var chunkFile = BuildChunkFileName(ChunkObject.transform.position);
+
+        if(!File.Exists(chunkFile))
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(chunkFile));
+        }
+
+        var bf = new BinaryFormatter();
+        var file = File.Open(chunkFile, FileMode.OpenOrCreate);
+        bd = new BlockData(ChunkData);
+        bf.Serialize(file, bd);
+        file.Close();
+        Debug.Log("Saving chunk from file: " + chunkFile);
+    }
 
     private void BuildChunk()
     {
+        var dataFromFile = false;
+        dataFromFile = Load();
+        
         ChunkData = new Block[World.ChunkSize, World.ChunkSize, World.ChunkSize];
 
         for(var z = 0; z < World.ChunkSize; z++)
@@ -31,6 +100,12 @@ public class Chunk
                     var worldX = (int)(x + ChunkObject.transform.position.x);
                     var worldY = (int)(y + ChunkObject.transform.position.y);
                     var worldZ = (int)(z + ChunkObject.transform.position.z);
+
+                    if(dataFromFile)
+                    {
+                        ChunkData[x, y, z] = new Block(bd.matrix[x, y, z], pos, ChunkObject.gameObject, this);
+                        continue;
+                    }
 
                     if(Utils.FractalBrownianMethod3D(worldX, worldY, worldZ, 0.1f, 3) < 0.42f)
                     {

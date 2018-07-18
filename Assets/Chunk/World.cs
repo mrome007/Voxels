@@ -104,6 +104,7 @@ public class World : MonoBehaviour
             if(Chunks.TryGetValue(name, out chunk))
             {
                 Destroy(chunk.ChunkObject);
+                chunk.Save();
                 Chunks.TryRemove(name, out chunk);
                 yield return null;
             }

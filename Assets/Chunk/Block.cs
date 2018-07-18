@@ -49,7 +49,7 @@ public class Block
 
     public bool IsSolid;
 
-    private BlockType bType;
+    public BlockType bType;
     private GameObject parent;
     private Vector3 position;
     private Chunk owner;

@@ -17,6 +17,8 @@ public class World : MonoBehaviour
     public static ConcurrentDictionary<string, Chunk> Chunks;
     public static bool Firstbuild = true;
 
+    public static List<string> ToRemove = new List<string>();
+
     private Vector3 lastBuildPos;
     private CoroutineQueue queue;
     public static uint maxCoroutines = 1000;
@@ -84,7 +86,27 @@ public class World : MonoBehaviour
                 c.Value.DrawChunk();
             }
 
+            if(c.Value.ChunkObject && Vector3.Distance(Player.transform.position, c.Value.ChunkObject.transform.position) > Radius * ChunkSize)
+            {
+                ToRemove.Add(c.Key);
+            }
+
             yield return null;
+        }
+    }
+
+    private IEnumerator RemoveOldChunks()
+    {
+        for(var i = 0; i < ToRemove.Count; i++)
+        {
+            var name = ToRemove[i];
+            Chunk chunk;
+            if(Chunks.TryGetValue(name, out chunk))
+            {
+                Destroy(chunk.ChunkObject);
+                Chunks.TryRemove(name, out chunk);
+                yield return null;
+            }
         }
     }
 
@@ -143,5 +165,6 @@ public class World : MonoBehaviour
         }
 
         queue.Run(DrawChunks());
+        queue.Run(RemoveOldChunks());
     }
 }

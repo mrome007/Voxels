@@ -13,7 +13,7 @@ public class World : MonoBehaviour
     public static int ColumnHeight = 16;
     public static int ChunkSize = 16;
     public static int WorldSize = 1;
-    public static int Radius = 6;
+    public static int Radius = 4;
     public static ConcurrentDictionary<string, Chunk> Chunks;
     public static bool Firstbuild = true;
 

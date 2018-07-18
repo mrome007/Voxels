@@ -80,7 +80,6 @@ public class Chunk
         bd = new BlockData(ChunkData);
         bf.Serialize(file, bd);
         file.Close();
-        Debug.Log("Saving chunk from file: " + chunkFile);
     }
 
     private void BuildChunk()

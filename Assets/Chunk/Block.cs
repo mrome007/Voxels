@@ -63,6 +63,12 @@ public class Block
         IsSolid = bType != BlockType.AIR;
     }
 
+    public void SetType(BlockType type)
+    {
+        bType = type;
+        IsSolid = bType != BlockType.AIR;
+    }
+
     private void CreateQuad(CubeSide side)
     {
         var mesh = new Mesh();

@@ -23,13 +23,17 @@ public class Block
         DIAMOND,
         REDSTONE,
         BEDROCK,
+        NOCRACK,
+        CRACK1,
+        CRACK2,
+        CRACK3,
+        CRACK4,
         AIR
-
     }
 
 
 
-    private Vector2[,] blockUVs = 
+    Vector2[,] blockUVs = 
     { 
         /*GRASS TOP*/       {new Vector2( 0.125f, 0.375f ), new Vector2( 0.1875f, 0.375f),
             new Vector2( 0.125f, 0.4375f ),new Vector2( 0.1875f, 0.4375f )},
@@ -39,12 +43,22 @@ public class Block
             new Vector2( 0.125f, 1.0f ),new Vector2( 0.1875f, 1.0f )},
         /*STONE*/           {new Vector2( 0, 0.875f ), new Vector2( 0.0625f, 0.875f),
             new Vector2( 0, 0.9375f ),new Vector2( 0.0625f, 0.9375f )},
-        /*DIAMOND*/         {new Vector2(0.125f, 0.75f), new Vector2(0.1875f, 0.75f),
-            new Vector2(0.125f, 0.8125f), new Vector2(0.1875f, 0.8125f)},
-        /*REDSTONE*/         {new Vector2(0.1875f, 0.75f), new Vector2(0.25f, 0.75f),
-            new Vector2(0.1875f, 0.8125f), new Vector2(0.25f, 0.8125f)},
-        /*BEDROCK*/         {new Vector2(0.0625f, 0.5f), new Vector2(0.125f, 0.5f),
-            new Vector2(0.0625f, 0.5625f), new Vector2(0.125f, 0.5625f)}
+        /*BEDROCK*/         {new Vector2( 0.3125f, 0.8125f ), new Vector2( 0.375f, 0.8125f),
+            new Vector2( 0.3125f, 0.875f ),new Vector2( 0.375f, 0.875f )},
+        /*REDSTONE*/        {new Vector2( 0.1875f, 0.75f ), new Vector2( 0.25f, 0.75f),
+            new Vector2( 0.1875f, 0.8125f ),new Vector2( 0.25f, 0.8125f )},
+        /*DIAMOND*/         {new Vector2( 0.125f, 0.75f ), new Vector2( 0.1875f, 0.75f),
+            new Vector2( 0.125f, 0.8125f ),new Vector2( 0.1875f, 0.8125f )},
+        /*NOCRACK*/         {new Vector2( 0.6875f, 0f ), new Vector2( 0.75f, 0f),
+            new Vector2( 0.6875f, 0.0625f ),new Vector2( 0.75f, 0.0625f )},
+        /*CRACK1*/          { new Vector2(0f,0f),  new Vector2(0.0625f,0f),
+            new Vector2(0f,0.0625f), new Vector2(0.0625f,0.0625f)},
+        /*CRACK2*/          { new Vector2(0.0625f,0f),  new Vector2(0.125f,0f),
+            new Vector2(0.0625f,0.0625f), new Vector2(0.125f,0.0625f)},
+        /*CRACK3*/          { new Vector2(0.125f,0f),  new Vector2(0.1875f,0f),
+            new Vector2(0.125f,0.0625f), new Vector2(0.1875f,0.0625f)},
+        /*CRACK4*/          { new Vector2(0.1875f,0f),  new Vector2(0.25f,0f),
+            new Vector2(0.1875f,0.0625f), new Vector2(0.25f,0.0625f)}
     }; 
 
     public bool IsSolid;
@@ -54,6 +68,10 @@ public class Block
     private Vector3 position;
     private Chunk owner;
 
+    public BlockType Health;
+    private int currentHealth;
+    private int[] blockHealthMax = { 3, 3, 4, 4, 4, -1, 0, 0, 0, 0, 0, 0 };
+
     public Block(BlockType blk, Vector3 pos, GameObject par, Chunk own)
     {
         bType = blk;
@@ -61,12 +79,38 @@ public class Block
         position = pos;
         parent = par;
         IsSolid = bType != BlockType.AIR;
+        Health = BlockType.NOCRACK;
+        currentHealth = blockHealthMax[(int)bType];
     }
 
     public void SetType(BlockType type)
     {
         bType = type;
         IsSolid = bType != BlockType.AIR;
+
+        Health = BlockType.NOCRACK;
+        currentHealth = blockHealthMax[(int)bType];
+    }
+
+    public bool HitBlock()
+    {
+        if(currentHealth == -1)
+        {
+            return false;
+        }
+        currentHealth--;
+        Health++;
+        if(currentHealth <= 0)
+        {
+            bType = BlockType.AIR;
+            IsSolid = false;
+            Health = BlockType.NOCRACK;
+            owner.Redraw();
+            return true;
+        }
+
+        owner.Redraw();
+        return false;
     }
 
     private void CreateQuad(CubeSide side)
@@ -77,6 +121,7 @@ public class Block
         var vertices = new Vector3[4]; //cube has 4 vertices.
         var normals = new Vector3[4]; //the 4 vertices have a normal respectively.
         var uvs = new Vector2[4]; //texture mapping for each vertex.
+        var suvs = new List<Vector2>();
         var triangles = new int[6]; //6 triangles in a cube.
 
         //all possible UVs
@@ -106,6 +151,11 @@ public class Block
             uv01 = blockUVs[(int)(bType + 1), 2];
             uv11 = blockUVs[(int)(bType + 1), 3];
         }
+
+        suvs.Add(blockUVs[(int)(Health + 1), 3]);
+        suvs.Add(blockUVs[(int)(Health + 1), 2]);
+        suvs.Add(blockUVs[(int)(Health + 1), 0]);
+        suvs.Add(blockUVs[(int)(Health + 1), 1]);
 
         //all possible vertices
         var p0 = new Vector3(-0.5f, -0.5f, 0.5f);
@@ -160,6 +210,7 @@ public class Block
         mesh.vertices = vertices;
         mesh.normals = normals;
         mesh.uv = uvs;
+        mesh.SetUVs(1, suvs);
         mesh.triangles = triangles;
 
         mesh.RecalculateBounds();

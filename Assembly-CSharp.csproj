@@ -77,6 +77,7 @@
      <Compile Include="Assets\TestCube\DisplayFPS.cs" />
      <Compile Include="Assets\TestCube\WorldController.cs" />
      <None Include="Assets\GraphPlay\Grapher\IMPORTANT_README!.txt" />
+     <None Include="Assets\TexturingQuad&amp;Cubes\blockuvs.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

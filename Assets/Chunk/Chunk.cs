@@ -146,8 +146,14 @@ public class Chunk
                 }
             }
         }
+    }
 
-
+    public void Redraw()
+    {
+        GameObject.DestroyImmediate(ChunkObject.GetComponent<MeshFilter>());
+        GameObject.DestroyImmediate(ChunkObject.GetComponent<MeshRenderer>());
+        GameObject.DestroyImmediate(ChunkObject.GetComponent<Collider>());
+        DrawChunk();
     }
 
     public void DrawChunk()

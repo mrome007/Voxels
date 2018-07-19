@@ -24,53 +24,52 @@ public class BlockInteraction : MonoBehaviour
                 var y = (int)(Mathf.Round(hitBlock.y) - hit.collider.gameObject.transform.position.y);
                 var z = (int)(Mathf.Round(hitBlock.z) - hit.collider.gameObject.transform.position.z);
 
-                var updates = new List<string>();
-                var thisChunkX = hit.collider.gameObject.transform.position.x;
-                var thisChunkY = hit.collider.gameObject.transform.position.y;
-                var thisChunkZ = hit.collider.gameObject.transform.position.z;
-
-                updates.Add(hit.collider.gameObject.name);
-
-                if(x == 0)
+                Chunk hitChunk;
+                if(World.Chunks.TryGetValue(hit.collider.gameObject.name, out hitChunk) && hitChunk.ChunkData[x, y, z].HitBlock())
                 {
-                    updates.Add(World.BuildChunkName(new Vector3(thisChunkX - World.ChunkSize, thisChunkY, thisChunkZ)));
-                }
 
-                if(x == World.ChunkSize - 1)
-                {
-                    updates.Add(World.BuildChunkName(new Vector3(thisChunkX + World.ChunkSize, thisChunkY, thisChunkZ)));
-                }
+                    var updates = new List<string>();
+                    var thisChunkX = hitChunk.ChunkObject.transform.position.x;
+                    var thisChunkY = hitChunk.ChunkObject.transform.position.y;
+                    var thisChunkZ = hitChunk.ChunkObject.transform.position.z;
 
-                if(y == 0)
-                {
-                    updates.Add(World.BuildChunkName(new Vector3(thisChunkX, thisChunkY - World.ChunkSize, thisChunkZ)));
-                }
-
-                if(y == World.ChunkSize - 1)
-                {
-                    updates.Add(World.BuildChunkName(new Vector3(thisChunkX, thisChunkX + World.ChunkSize, thisChunkZ)));
-                }
-
-                if(z == 0)
-                {
-                    updates.Add(World.BuildChunkName(new Vector3(thisChunkX, thisChunkY, thisChunkZ - World.ChunkSize)));
-                }
-
-                if(z == World.ChunkSize - 1)
-                {
-                    updates.Add(World.BuildChunkName(new Vector3(thisChunkX, thisChunkY, thisChunkZ + World.ChunkSize)));
-                }
-
-                foreach(var cName in updates)
-                {
-                    Chunk chunk;
-                    if(World.Chunks.TryGetValue(cName, out chunk))
+                    if(x == 0)
                     {
-                        DestroyImmediate(chunk.ChunkObject.GetComponent<MeshFilter>());
-                        DestroyImmediate(chunk.ChunkObject.GetComponent<MeshRenderer>());
-                        DestroyImmediate(chunk.ChunkObject.GetComponent<Collider>());
-                        chunk.ChunkData[x, y, z].SetType(Block.BlockType.AIR);
-                        chunk.DrawChunk();
+                        updates.Add(World.BuildChunkName(new Vector3(thisChunkX - World.ChunkSize, thisChunkY, thisChunkZ)));
+                    }
+
+                    if(x == World.ChunkSize - 1)
+                    {
+                        updates.Add(World.BuildChunkName(new Vector3(thisChunkX + World.ChunkSize, thisChunkY, thisChunkZ)));
+                    }
+
+                    if(y == 0)
+                    {
+                        updates.Add(World.BuildChunkName(new Vector3(thisChunkX, thisChunkY - World.ChunkSize, thisChunkZ)));
+                    }
+
+                    if(y == World.ChunkSize - 1)
+                    {
+                        updates.Add(World.BuildChunkName(new Vector3(thisChunkX, thisChunkX + World.ChunkSize, thisChunkZ)));
+                    }
+
+                    if(z == 0)
+                    {
+                        updates.Add(World.BuildChunkName(new Vector3(thisChunkX, thisChunkY, thisChunkZ - World.ChunkSize)));
+                    }
+
+                    if(z == World.ChunkSize - 1)
+                    {
+                        updates.Add(World.BuildChunkName(new Vector3(thisChunkX, thisChunkY, thisChunkZ + World.ChunkSize)));
+                    }
+
+                    foreach(var cName in updates)
+                    {            
+                        Chunk c;
+                        if(World.Chunks.TryGetValue(cName, out c))
+                        {
+                            c.Redraw();
+                        }
                     }
                 }
             }
